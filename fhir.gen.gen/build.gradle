@@ -1,0 +1,101 @@
+plugins {
+  id 'java'
+  id 'maven-publish'
+}
+
+java {
+  toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+repositories { mavenLocal(); mavenCentral() }
+
+/** GENERATED OUTPUT TARGET (inside the model project) */
+def modelGenDir = file("${project(':fhir.gen.model').projectDir}/build/generated/sources/xtend/main")
+
+/** 1) Create the custom configuration BEFORE dependencies */
+configurations {
+  xtendCompiler
+}
+
+dependencies {
+  // If your generator code references types that live in the model (e.g., FieldSpec interfaces),
+  // keep that as compileOnly so we don't drag model into this jar's runtime:
+  compileOnly project(':fhir.gen.model')
+
+  // 2) Put Xtend/Xtext toolchain on the custom configuration used by JavaExec
+  xtendCompiler libs.xtextXbase
+  xtendCompiler libs.xtendCore
+  xtendCompiler libs.xtendLib
+  xtendCompiler libs.xtendStandalone
+  // If you use the standalone runner, keep versions aligned with your catalog:
+  // xtendCompiler libs.xtendStandalone
+
+  // Optional compileOnlys if your generator code imports these APIs
+  compileOnly libs.fhirEmf
+  compileOnly libs.emfCommon
+  compileOnly libs.emfEcore
+  compileOnly libs.emfEcoreXMI
+  compileOnly libs.jacksonAnnotations
+  compileOnly libs.jacksonDatabind
+  compileOnly libs.jacksonXml
+
+  testImplementation libs.junitJupiter
+}
+
+/** (Optional) your generator's own sources */
+sourceSets {
+  main {
+    java.srcDirs = ['src/main/java']        // adjust if you keep Xtend driver code elsewhere
+    resources.srcDirs = ['src/main/resources']
+  }
+}
+
+/** Task: run Xtend compiler to generate Java into the MODEL project */
+// tasks.register('generateModel', JavaExec) {
+//   group = "codegen"
+//   description = "Generate Java sources into fhir.gen.model/build/generated/sources/xtend/main"
+//   classpath = configurations.xtendCompiler
+//   mainClass = "org.eclipse.xtend.core.compiler.batch.Main"
+//   doFirst { modelGenDir.mkdirs() }
+//   args = [
+//     "src/main/xtend",
+//     "-d", modelGenDir,
+//     "-classpath", configurations.xtendCompiler.asPath + File.pathSeparator + sourceSets.main.runtimeClasspath.asPath
+//   ]
+// }
+
+tasks.register('generateModel', JavaExec) {
+  group = "codegen"
+  description = "Generate Java sources into fhir.gen.model/build/generated/sources/xtend/main"
+  classpath = configurations.xtendCompiler
+  mainClass = "org.eclipse.xtend.core.compiler.batch.Main"
+
+  // incrementality
+  inputs.dir("src/main/xtend")
+  outputs.dir(modelGenDir)
+
+  doFirst { modelGenDir.mkdirs() }
+
+  args = [
+    "src/main/xtend",
+    "-d", modelGenDir,
+    // NOTE: use compileClasspath so compileOnly deps are visible to Xtend
+    "-classpath", configurations.xtendCompiler.asPath + File.pathSeparator + sourceSets.main.compileClasspath.asPath
+  ]
+}
+
+/** Clean up generated output in the model when cleaning this project */
+tasks.named('clean') {
+  doLast {
+    if (modelGenDir.exists()) {
+      println "Deleting generated sources in model: $modelGenDir"
+      delete modelGenDir
+    }
+  }
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) { from components.java }
+  }
+}

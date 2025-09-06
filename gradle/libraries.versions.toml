@@ -1,0 +1,72 @@
+[versions]
+# Spring & friends
+springboot = "3.3.1"
+# When using Boot, it manages Spring Framework; avoid pinning spring-context manually.
+
+# JSON/logging (used in non-Boot modules; Boot app will override via BOM)
+jackson = "2.17.2"
+slf4j = "2.0.13"
+logback = "1.5.6"
+
+# Testing
+junit = "5.10.2"
+assertj = "3.25.3"
+mockito = "5.12.0"
+
+# EMF/FHIR
+fhir = "4.0.1"
+emf = "2.40.0"
+ecore = "2.38.0"
+xcore = "1.7.0"
+
+# Xtext/Xtend (aligned)
+xtext = "2.39.0"
+xtend = "2.39.0"
+
+# Misc
+guava = "33.4.0-jre"
+mwe2 = "2.22.0"
+
+[libraries]
+# --- FHIR/EMF ---
+fhirEmf = { module = "org.hl7.fhir:fhir.emf", version.ref = "fhir" }
+
+emfCommon = { module = "org.eclipse.emf:org.eclipse.emf.common", version.ref = "emf" }
+emfEcore = { module = "org.eclipse.emf:org.eclipse.emf.ecore", version.ref = "ecore" }
+emfEcoreXMI = { module = "org.eclipse.emf:org.eclipse.emf.ecore.xmi", version.ref = "ecore" }
+ecoreXcore = { module = "org.eclipse.emf:org.eclipse.emf.ecore.xcore.lib", version.ref = "xcore" }
+
+# --- Xtext/Xtend (match versions) ---
+xtext = { module = "org.eclipse.xtext:org.eclipse.xtext", version.ref = "xtext" }
+xtextXbase = { module = "org.eclipse.xtext:org.eclipse.xtext.xbase.lib", version.ref = "xtext" }
+
+xtendCore = { module = "org.eclipse.xtend:org.eclipse.xtend.core", version.ref = "xtend" }
+xtendLib = { module = "org.eclipse.xtend:org.eclipse.xtend.lib", version.ref = "xtend" }
+xtendMacro = { module = "org.eclipse.xtend:org.eclipse.xtend.lib.macro", version.ref = "xtend" }
+# The old standalone 2.4.3 will break things. If you need it, use aligned version:
+xtendStandalone = { module = "org.eclipse.xtend:org.eclipse.xtend.standalone", version.ref = "xtend" }
+
+# --- Jackson ---
+jacksonCore = { module = "com.fasterxml.jackson.core:jackson-core", version.ref = "jackson" }
+jacksonDatabind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jacksonAnnotations = { module = "com.fasterxml.jackson.core:jackson-annotations", version.ref = "jackson" }
+jacksonXml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version.ref = "jackson" }
+
+# --- Logging ---
+slf4jAPI = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logbackClassic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# --- Testing ---
+junitJupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+mockito = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+
+# --- Spring Boot app dependencies (Boot manages versions for these) ---
+springWeb =        { module = "org.springframework.boot:spring-boot-starter-web",        version.ref = "springboot" }
+springActuator =   { module = "org.springframework.boot:spring-boot-starter-actuator",   version.ref = "springboot" }
+springTest =       { module = "org.springframework.boot:spring-boot-starter-test",       version.ref = "springboot" }
+springSessionDataRedis = { module = "org.springframework.session:spring-session-data-redis" } # no version; Boot BOM
+redis =            { module = "org.springframework.boot:spring-boot-starter-data-redis", version.ref = "springboot" }
+
+# If you really need spring-context outside of Boot:
+springContext = { module = "org.springframework:spring-context" }

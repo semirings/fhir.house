@@ -1,0 +1,60 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '3.3.1'
+  id 'io.spring.dependency-management' version '1.1.5'
+  id 'maven-publish'
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories { mavenLocal(); mavenCentral() }
+
+dependencies {
+  implementation project(':fhir.gen.model')  
+  implementation project(':fhir.gen.gen')
+
+  // Spring Boot stack (trim to what you actually use)
+  implementation libs.springWeb
+  implementation libs.springActuator
+  implementation libs.springContext
+  implementation libs.springSessionDataRedis
+  implementation libs.redis
+
+  // FHIR/EMF/Jackson that the APP uses at runtime (keep only the ones needed)
+  implementation libs.fhirEmf
+  implementation libs.emfCommon
+  implementation libs.emfEcore
+  implementation libs.emfEcoreXMI
+  implementation libs.jacksonAnnotations
+  implementation libs.jacksonDatabind
+  implementation libs.jacksonXml
+
+  testImplementation libs.junitJupiter
+}
+
+tasks.withType(Test).configureEach { useJUnitPlatform() }
+
+springBoot {
+  mainClass = 'org.hl7.fhir.FhirIgApplication' // your real entry point
+}
+
+bootJar {
+  archiveBaseName.set('fhir-engine')
+  archiveClassifier.set('all')
+  launchScript() // optional
+}
+
+/** If you want to publish the uber jar (not the thin jar), publish bootJar */
+publishing {
+  publications {
+    boot(MavenPublication) {
+      artifact tasks.named('bootJar')
+      groupId = project.group
+      artifactId = 'fhir-engine'
+      version = project.version
+    }
+  }
+}

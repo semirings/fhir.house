@@ -1,0 +1,9 @@
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            from(files("gradle/libraries.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = 'fhir.ig'

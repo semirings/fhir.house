@@ -1,0 +1,19 @@
+pluginManagement {
+  plugins {
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
+  }
+  repositories { gradlePluginPortal(); mavenCentral() }
+}
+
+dependencyResolutionManagement {
+  versionCatalogs {
+    libs { from(files("gradle/libraries.versions.toml")) }
+  }
+}
+
+rootProject.name = 'fhir.house'
+
+include 'fhir.gen.gen', 'fhir.gen.model', 'fhir.gen.engine'
+
+

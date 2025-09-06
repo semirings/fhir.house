@@ -1,0 +1,41 @@
+plugins {
+  id 'java-library'
+  id 'maven-publish'
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+/**
+ * Generated sources will land here (written by :fhir.gen.gen task).
+ * We compile them from this project without committing them to VCS.
+ */
+def genDir = file("$buildDir/generated/sources/xtend/main")
+
+sourceSets {
+  main {
+    java.srcDir genDir
+  }
+}
+
+/**
+ * When we compile the model, make sure the generator has produced sources.
+ * This creates the build-time link: engine -> model -> (dependsOn) gen:generateModel
+ */
+tasks.named('compileJava') {
+  dependsOn(":fhir.gen.gen:generateModel")
+}
+
+tasks.named(':fhir.gen.model:compileJava') {
+  dependsOn(':fhir.gen.gen:generateModel')
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+    }
+  }
+}

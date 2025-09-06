@@ -1,0 +1,27 @@
+# Gradle
+.gradle/
+build/
+out/
+
+# IDEs
+*.iml
+.idea/
+*.class
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Generated Xtend
+src/main/xtend-gen/
+
+# Jars
+*.jar
+
+# eclipse
+bin/
+.classpath
+.project
+.settings/

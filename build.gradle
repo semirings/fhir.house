@@ -1,0 +1,25 @@
+allprojects {
+  group = 'iox.semirings'
+  version = '0.0.1'
+  repositories { mavenLocal(); mavenCentral() }
+}
+
+subprojects {
+  apply plugin: 'java-library'
+  apply plugin: 'maven-publish'
+
+  java {
+    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    withSourcesJar()
+  }
+
+  tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
+  }
+
+  tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging { events "started", "passed", "failed", "skipped"; showStandardStreams = true }
+  }
+}
