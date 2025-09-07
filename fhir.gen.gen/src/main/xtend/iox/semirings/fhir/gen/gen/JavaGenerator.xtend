@@ -1,6 +1,7 @@
 package iox.semirings.fhir.gen.gen
 
 import java.util.List
+import iox.semirings.fhir.gen.model.FieldSpec
 
 /**
  * JavaGenerator produces Java classes with fields + getters/setters.

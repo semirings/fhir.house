@@ -4,38 +4,32 @@ plugins {
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+  toolchain { languageVersion = JavaLanguageVersion.of(17) }
 }
 
-/**
- * Generated sources will land here (written by :fhir.gen.gen task).
- * We compile them from this project without committing them to VCS.
- */
-def genDir = file("$buildDir/generated/sources/xtend/main")
+repositories { mavenLocal(); mavenCentral() }
 
-sourceSets {
-  main {
-    java.srcDir genDir
-  }
-}
+def genDir = "$buildDir/generated/sources/xtend/main"  // String is fine; File also works
 
-/**
- * When we compile the model, make sure the generator has produced sources.
- * This creates the build-time link: engine -> model -> (dependsOn) gen:generateModel
- */
-tasks.named('compileJava') {
-  dependsOn(":fhir.gen.gen:generateModel")
-}
+// sourceSets {
+//   main {
+//     java.srcDir(genDir)          // ✅ add generated sources directory
+//     // java.srcDirs += genDir     // (alternative syntax, also OK)
+//   }
+// }
 
-tasks.named(':fhir.gen.model:compileJava') {
-  dependsOn(':fhir.gen.gen:generateModel')
-}
+// // Make sure the directory exists before first compile, avoids IDE/red build confusion
+// tasks.register('ensureGenDir') {
+//   doLast { file(genDir).mkdirs() }
+// }
+
+// // Ensure Xtend generation (in the other project) happens before we compile here
+// tasks.named('compileJava') {
+//   dependsOn('ensureGenDir', ':fhir.gen.gen:generateModel')
+// }
 
 publishing {
   publications {
-    mavenJava(MavenPublication) {
-      from components.java
-    }
+    mavenJava(MavenPublication) { from components.java }
   }
 }

@@ -26,9 +26,6 @@ dependencies {
   xtendCompiler libs.xtextXbase
   xtendCompiler libs.xtendCore
   xtendCompiler libs.xtendLib
-  xtendCompiler libs.xtendStandalone
-  // If you use the standalone runner, keep versions aligned with your catalog:
-  // xtendCompiler libs.xtendStandalone
 
   // Optional compileOnlys if your generator code imports these APIs
   compileOnly libs.fhirEmf
@@ -49,20 +46,6 @@ sourceSets {
     resources.srcDirs = ['src/main/resources']
   }
 }
-
-/** Task: run Xtend compiler to generate Java into the MODEL project */
-// tasks.register('generateModel', JavaExec) {
-//   group = "codegen"
-//   description = "Generate Java sources into fhir.gen.model/build/generated/sources/xtend/main"
-//   classpath = configurations.xtendCompiler
-//   mainClass = "org.eclipse.xtend.core.compiler.batch.Main"
-//   doFirst { modelGenDir.mkdirs() }
-//   args = [
-//     "src/main/xtend",
-//     "-d", modelGenDir,
-//     "-classpath", configurations.xtendCompiler.asPath + File.pathSeparator + sourceSets.main.runtimeClasspath.asPath
-//   ]
-// }
 
 tasks.register('generateModel', JavaExec) {
   group = "codegen"
